@@ -2,6 +2,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
+  "editor.formatOnSave": true,
+  "tailwindCSS.classFunctions": ["cn", "cva"],
   // use the TypeScript version installed in the project
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true
