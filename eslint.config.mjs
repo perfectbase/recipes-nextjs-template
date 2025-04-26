@@ -2,6 +2,8 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import tseslint from "typescript-eslint";
+// @ts-ignore -- no types for this plugin
+import drizzle from "eslint-plugin-drizzle";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +21,9 @@ export default tseslint.config(
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
     ],
+    plugins: {
+      drizzle,
+    },
     rules: {
       "no-console": "warn",
       "@typescript-eslint/array-type": "off",
@@ -39,6 +44,14 @@ export default tseslint.config(
       "@typescript-eslint/no-misused-promises": [
         "error",
         { checksVoidReturn: { attributes: false } },
+      ],
+      "drizzle/enforce-delete-with-where": [
+        "error",
+        { drizzleObjectName: "db" },
+      ],
+      "drizzle/enforce-update-with-where": [
+        "error",
+        { drizzleObjectName: "db" },
       ],
     },
   },
