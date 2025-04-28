@@ -36,7 +36,7 @@ export default function Home() {
         setError(null);
       } catch (error) {
         setSession(null);
-        setError(`Failed to check authentication status: ${error}`);
+        setError(`Failed to check authentication status: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setIsLoading(false);
       }
@@ -51,7 +51,7 @@ export default function Home() {
       setSession(null);
       setError(null);
     } catch (error) {
-      setError("Failed to sign out");
+      setError(`Failed to sign out: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 

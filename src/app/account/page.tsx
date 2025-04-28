@@ -31,7 +31,7 @@ export default function AccountPage() {
           setError("No user found in session");
         }
       } catch (error) {
-        setError(`Failed to fetch user data: ${error}`);
+        setError(`Failed to fetch user data: ${error instanceof Error ? error.message : String(error)}`);
       } finally {
         setIsLoading(false);
       }
@@ -46,7 +46,7 @@ export default function AccountPage() {
       setSession(null);
       router.push("/");
     } catch (error) {
-      setError("Failed to sign out");
+      setError(`Failed to sign out: ${error instanceof Error ? error.message : String(error)}`);
     }
   };
 
