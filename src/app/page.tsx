@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { AuthModal } from "@/components/AuthModal";
-import { useState, useEffect } from "react";
+import { Button } from "@/components/Button";
 import { authClient } from "@/lib/auth/client";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [modalState, setModalState] = useState<{
@@ -45,41 +46,60 @@ export default function Home() {
     }
   };
 
-  console.log("Current state - isLoading:", isLoading, "session:", session);
-
   return (
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <nav className="fixed top-0 right-0 p-4 flex gap-4">
+        {isLoading ? (
+          <div className="h-10 w-20 animate-pulse bg-gray-200 rounded-full"></div>
+        ) : session ? (
+          <div className="flex gap-4">
+            <Link
+              href="/account"
+              className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] cursor-pointer"
+            >
+              Account
+            </Link>
+            <Button onClick={handleSignOut}>
+              Sign out
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Button
+              variant="outline"
+              onClick={() => setModalState({ isOpen: true, mode: "login" })}
+            >
+              Login
+            </Button>
+            <Button
+              onClick={() => setModalState({ isOpen: true, mode: "signup" })}
+            >
+              Sign up
+            </Button>
+          </>
+        )}
+      </nav>
       <AuthModal
         isOpen={modalState.isOpen}
         mode={modalState.mode}
         onClose={() => setModalState({ ...modalState, isOpen: false })}
       />
       <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
-        <div className="flex flex-col items-center gap-4 sm:flex-row">
+        <div className="flex flex-col items-center gap-4">
           {isLoading ? (
             <div className="h-10 w-20 animate-pulse bg-gray-200 rounded-full"></div>
-          ) : session ? (
-            <button
-              onClick={handleSignOut}
-              className="bg-foreground text-background flex h-10 items-center justify-center rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] cursor-pointer"
-            >
-              Sign out
-            </button>
           ) : (
-            <>
-              <button
-                onClick={() => setModalState({ isOpen: true, mode: "login" })}
-                className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] cursor-pointer"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setModalState({ isOpen: true, mode: "signup" })}
-                className="bg-foreground text-background flex h-10 items-center justify-center rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] cursor-pointer"
-              >
-                Sign up
-              </button>
-            </>
+            <div className="flex gap-4">
+              <div>Session: {session ? JSON.stringify(session, null, 2) : "null"}</div>
+              {session && (
+                <Link
+                  href="/account"
+                  className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] cursor-pointer"
+                >
+                  Account
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </main>

@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { authClient } from "@/lib/auth/client";
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -16,6 +19,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
     name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setFormData({
@@ -23,6 +27,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
       password: "",
       name: "",
     });
+    setError(null);
   }, [mode]);
 
   useEffect(() => {
@@ -52,13 +57,33 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      // TODO: Handle the actual authentication logic here
-      console.log("Form data:", formData);
+      if (mode === "signup") {
+        const response = await authClient.signUp.email({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+        });
+        console.log("Signup response:", response);
+      } else {
+        const response = await authClient.signIn.email({
+          email: formData.email,
+          password: formData.password,
+        });
+        console.log("Login response:", response);
+      }
       onClose();
     } catch (error) {
-      console.error(error);
+      console.error("Authentication error:", error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        setError(String(error.message));
+      } else {
+        setError("An error occurred during authentication");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -81,81 +106,63 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
           <h2 className="text-xl font-semibold">
             {mode === "login" ? "Login" : "Sign up"}
           </h2>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground cursor-pointer"
+            className="text-muted-foreground hover:text-foreground"
           >
             ✕
-          </button>
+          </Button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              placeholder="Enter your email"
-              autoComplete="email"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              placeholder="Enter your password"
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-            />
-          </div>
-          {mode === "signup" && (
-            <div>
-              <label
-                htmlFor="name"
-                className="mb-1 block text-sm font-medium"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                placeholder="Enter your name"
-                autoComplete="name"
-              />
+          {error && (
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-500">
+              {error}
             </div>
           )}
-          <button
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            autoComplete="email"
+            required
+          />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            label="Password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            required
+          />
+          {mode === "signup" && (
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              label="Name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              autoComplete="name"
+              required
+            />
+          )}
+          <Button
             type="submit"
-            disabled={isSubmitting}
-            className="bg-foreground text-background w-full rounded-full py-2 text-sm font-medium transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            isLoading={isSubmitting}
+            className="w-full"
           >
-            {isSubmitting
-              ? "Please wait..."
-              : mode === "login"
-                ? "Login"
-                : "Sign up"}
-          </button>
+            {mode === "login" ? "Login" : "Sign up"}
+          </Button>
         </form>
       </div>
     </div>
