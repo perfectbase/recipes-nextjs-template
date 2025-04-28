@@ -78,7 +78,7 @@ export default function Home() {
         ) : error ? (
           <p className="text-3xl font-medium text-red-500">{error}</p>
         ) : (
-          <p className="text-2xl md:text-3xl font-medium">
+          <p className="text-2xl font-medium md:text-3xl">
             {`Home | You are${session?.data ? " " : " not "}logged in`}
           </p>
         )}

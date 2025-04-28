@@ -1,12 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth/client";
+import type { Session, User } from "@/server/db/schema";
 import CircularProgress from "@/components/base/CircularProgress";
 import { Container } from "@/components/base/Container";
 import { Navbar } from "@/components/Navbar";
-import { authClient } from "@/lib/auth/client";
-import type { Session, User } from "@/server/db/schema";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 interface AuthSession {
   data: {
@@ -66,13 +66,15 @@ export default function AccountPage() {
         {isLoading ? (
           <CircularProgress />
         ) : error ? (
-          <p className="text-2xl md:text-3xl font-medium text-red-500">{error}</p>
+          <p className="text-2xl font-medium text-red-500 md:text-3xl">
+            {error}
+          </p>
         ) : session?.data?.user ? (
           <>
-            <p className="text-2xl md:text-3xl font-medium">
+            <p className="text-2xl font-medium md:text-3xl">
               {"Account | You are logged in"}
             </p>
-            <p className="text-2xl md:text-3xl font-medium">
+            <p className="text-2xl font-medium md:text-3xl">
               {`${session.data.user.name} (${session.data.user.email})`}
             </p>
           </>

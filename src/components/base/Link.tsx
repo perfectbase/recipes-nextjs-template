@@ -9,7 +9,10 @@ interface LinkProps extends ComponentPropsWithoutRef<typeof NextLink> {
 }
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, variant = "default", size = "default", children, ...props }, _ref) => {
+  (
+    { className, variant = "default", size = "default", children, ...props },
+    _ref,
+  ) => {
     const baseStyles =
       "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer";
 
