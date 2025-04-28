@@ -5,8 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1745816601960,
-      "tag": "0000_add_users_table",
+      "when": 1745819789755,
+      "tag": "0000_run_better_auth_cli_generate",
       "breakpoints": true
     }
   ]
