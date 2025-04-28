@@ -1,8 +1,39 @@
+"use client";
+
 import Image from "next/image";
+import { AuthModal } from "@/components/AuthModal";
+import { useState } from "react";
 
 export default function Home() {
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    mode: "login" | "signup";
+  }>({
+    isOpen: false,
+    mode: "login",
+  });
+
   return (
     <div className="grid min-h-screen grid-rows-[20px_1fr_20px] items-center justify-items-center gap-16 p-8 pb-20 font-[family-name:var(--font-geist-sans)] sm:p-20">
+      <nav className="fixed top-0 right-0 p-4 flex gap-4">
+        <button
+          onClick={() => setModalState({ isOpen: true, mode: "login" })}
+          className="flex h-10 items-center justify-center rounded-full border border-solid border-black/[.08] px-4 text-sm font-medium transition-colors hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] cursor-pointer"
+        >
+          Login
+        </button>
+        <button
+          onClick={() => setModalState({ isOpen: true, mode: "signup" })}
+          className="bg-foreground text-background flex h-10 items-center justify-center rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] cursor-pointer"
+        >
+          Sign up
+        </button>
+      </nav>
+      <AuthModal
+        isOpen={modalState.isOpen}
+        mode={modalState.mode}
+        onClose={() => setModalState({ ...modalState, isOpen: false })}
+      />
       <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
         <Image
           className="dark:invert"
