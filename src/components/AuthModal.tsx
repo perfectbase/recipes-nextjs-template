@@ -13,9 +13,17 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    ...(mode === "signup" ? { name: "" } : {}),
+    name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      email: "",
+      password: "",
+      name: "",
+    });
+  }, [mode]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -96,6 +104,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
               onChange={handleChange}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               placeholder="Enter your email"
+              autoComplete="email"
             />
           </div>
           <div>
@@ -113,6 +122,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
               onChange={handleChange}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               placeholder="Enter your password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
             />
           </div>
           {mode === "signup" && (
@@ -131,6 +141,7 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
                 onChange={handleChange}
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 placeholder="Enter your name"
+                autoComplete="name"
               />
             </div>
           )}
