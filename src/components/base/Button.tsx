@@ -20,7 +20,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref
   ) => {
-    const baseStyles = "rounded-full font-medium transition-colors cursor-pointer";
+    const baseStyles = "rounded-full font-medium transition-colors cursor-pointer inline-flex items-center justify-center";
 
     const variants = {
       default: "bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc]",

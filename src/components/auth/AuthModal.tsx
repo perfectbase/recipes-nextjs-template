@@ -2,16 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
+import { Button } from "@/components/base/Button";
+import { Input } from "@/components/base/Input";
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "login" | "signup";
+  onSuccess?: (session: any) => void;
 }
 
-export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
+export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     email: "",
@@ -61,18 +62,41 @@ export function AuthModal({ isOpen, onClose, mode }: AuthModalProps) {
 
     try {
       if (mode === "signup") {
+        console.log("Signup request data:", {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+        });
         const response = await authClient.signUp.email({
           email: formData.email,
           password: formData.password,
           name: formData.name,
         });
         console.log("Signup response:", response);
+
+        if (response.error) {
+          console.error("Signup error details:", response.error);
+          throw new Error(response.error.message || "Failed to sign up");
+        }
+
+        // Get the session after successful signup
+        const session = await authClient.getSession();
+        onSuccess?.(session.data);
       } else {
         const response = await authClient.signIn.email({
           email: formData.email,
           password: formData.password,
         });
         console.log("Login response:", response);
+
+        if (response.error) {
+          console.error("Login error details:", response.error);
+          throw new Error(response.error.message || "Failed to log in");
+        }
+
+        // Get the session after successful login
+        const session = await authClient.getSession();
+        onSuccess?.(session.data);
       }
       onClose();
     } catch (error) {

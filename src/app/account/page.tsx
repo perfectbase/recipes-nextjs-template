@@ -1,28 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import CircularProgress from "@/components/base/CircularProgress";
+import { Container } from "@/components/base/Container";
+import { Navbar } from "@/components/Navbar";
 import { authClient } from "@/lib/auth/client";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
-  const [user, setUser] = useState<{
-    email: string;
-    name: string;
-  } | null>(null);
+  const router = useRouter();
+  const [session, setSession] = useState<null | any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const session = await authClient.getSession();
-        if (session.data?.user) {
-          setUser({
-            email: session.data.user.email,
-            name: session.data.user.name,
-          });
+
+        if (session.data) {
+          setSession(session);
+        } else {
+          setError("No user found in session");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setError(error as string);
       } finally {
         setIsLoading(false);
       }
@@ -31,52 +34,39 @@ export default function AccountPage() {
     fetchUserData();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-      </div>
-    );
-  }
+  const handleSignOut = async () => {
+    try {
+      await authClient.signOut();
+      setSession(null);
+      router.push("/");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
-  if (!user) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-        <p className="text-lg">You need to be logged in to view this page.</p>
-        <Link
-          href="/"
-          className="text-blue-600 hover:underline"
-        >
-          Go back home
-        </Link>
-      </div>
-    );
-  }
+  const handleOpenModal = (_: "login" | "signup") => {
+    // No-op since we don't need modal on account page
+  };
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold">Your Account</h1>
-
-      <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-        <div className="mb-4">
-          <h2 className="text-lg font-medium text-gray-500">Name</h2>
-          <p className="text-xl">{user.name}</p>
-        </div>
-
-        <div className="mb-4">
-          <h2 className="text-lg font-medium text-gray-500">Email</h2>
-          <p className="text-xl">{user.email}</p>
-        </div>
-
-        <div className="mt-6 flex justify-between">
-          <Link
-            href="/"
-            className="text-blue-600 hover:underline"
-          >
-            Back to home
-          </Link>
-        </div>
-      </div>
-    </div>
+    <Container>
+      <Navbar
+        isLoading={isLoading}
+        session={session}
+        onSignOut={handleSignOut}
+        onOpenModal={handleOpenModal}
+      />
+      <main className="row-start-2 flex flex-col items-center gap-[32px] sm:items-start">
+        {isLoading ? (
+          <CircularProgress />
+        ) : error ? (
+          <p className="text-3xl font-medium text-red-500">{error}</p>
+        ) : session?.data?.user ? (
+          <p className="text-3xl font-medium">
+            {`Account | You are logged in as ${session.data.user.name} (${session.data.user.email})`}
+          </p>
+        ) : null}
+      </main>
+    </Container>
   );
-} 
+}

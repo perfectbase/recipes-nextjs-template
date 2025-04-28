@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import type { InferSelectModel } from "drizzle-orm";
 
 /**
  * This file contains the schemas for the database
@@ -54,3 +55,8 @@ export const verification = pgTable("verification", {
   createdAt: timestamp('created_at'),
   updatedAt: timestamp('updated_at')
 });
+
+export type User = InferSelectModel<typeof user>;
+export type Session = InferSelectModel<typeof session>;
+export type Account = InferSelectModel<typeof account>;
+export type Verification = InferSelectModel<typeof verification>;
