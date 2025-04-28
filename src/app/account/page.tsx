@@ -1,11 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth/client";
 import CircularProgress from "@/components/base/CircularProgress";
 import { Container } from "@/components/base/Container";
 import { Navbar } from "@/components/Navbar";
-import { authClient } from "@/lib/auth/client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AccountPage() {
   const router = useRouter();

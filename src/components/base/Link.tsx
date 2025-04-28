@@ -1,5 +1,5 @@
 import NextLink from "next/link";
-import { type AnchorHTMLAttributes, forwardRef } from "react";
+import { forwardRef, type AnchorHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
 interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
@@ -18,13 +18,16 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(
       href,
       ...props
     },
-    ref
+    ref,
   ) => {
-    const baseStyles = "rounded-full font-medium transition-colors cursor-pointer inline-flex items-center justify-center";
+    const baseStyles =
+      "rounded-full font-medium transition-colors cursor-pointer inline-flex items-center justify-center";
 
     const variants = {
-      default: "bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc]",
-      outline: "border border-solid border-black/[.08] hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]",
+      default:
+        "bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc]",
+      outline:
+        "border border-solid border-black/[.08] hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]",
       ghost: "hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a]",
     };
 
@@ -37,20 +40,15 @@ const Link = forwardRef<HTMLAnchorElement, LinkProps>(
     return (
       <NextLink
         href={href}
-        className={cn(
-          baseStyles,
-          variants[variant],
-          sizes[size],
-          className
-        )}
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
         {...props}
       >
         {children}
       </NextLink>
     );
-  }
+  },
 );
 
 Link.displayName = "Link";
 
-export { Link }; 
+export { Link };

@@ -12,7 +12,12 @@ interface AuthModalProps {
   onSuccess?: (session: any) => void;
 }
 
-export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) {
+export function AuthModal({
+  isOpen,
+  onClose,
+  mode,
+  onSuccess,
+}: AuthModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({
     email: "",
@@ -103,7 +108,11 @@ export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) 
       console.error("Authentication error:", error);
       if (error instanceof Error) {
         setError(error.message);
-      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error
+      ) {
         setError(String(error.message));
       } else {
         setError("An error occurred during authentication");
@@ -124,7 +133,7 @@ export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div
         ref={modalRef}
-        className="w-full max-w-md rounded-lg bg-background p-6 shadow-lg"
+        className="bg-background w-full max-w-md rounded-lg p-6 shadow-lg"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">
@@ -164,7 +173,9 @@ export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) 
             value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"
-            autoComplete={mode === "login" ? "current-password" : "new-password"}
+            autoComplete={
+              mode === "login" ? "current-password" : "new-password"
+            }
             required
           />
           {mode === "signup" && (
@@ -180,15 +191,11 @@ export function AuthModal({ isOpen, onClose, mode, onSuccess }: AuthModalProps) 
               required
             />
           )}
-          <Button
-            type="submit"
-            isLoading={isSubmitting}
-            className="w-full"
-          >
+          <Button type="submit" isLoading={isSubmitting} className="w-full">
             {mode === "login" ? "Login" : "Sign up"}
           </Button>
         </form>
       </div>
     </div>
   );
-} 
+}

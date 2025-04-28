@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
@@ -13,4 +13,4 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/account"],
-}; 
+};

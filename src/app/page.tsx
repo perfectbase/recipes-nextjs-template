@@ -1,11 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { authClient } from "@/lib/auth/client";
 import { AuthModal } from "@/components/auth/AuthModal";
 import CircularProgress from "@/components/base/CircularProgress";
 import { Container } from "@/components/base/Container";
 import { Navbar } from "@/components/Navbar";
-import { authClient } from "@/lib/auth/client";
-import { useEffect, useState } from "react";
 
 export default function Home() {
   const [modalState, setModalState] = useState<{
