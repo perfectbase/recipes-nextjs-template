@@ -2,10 +2,18 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth/client";
+import type { Session, User } from "@/server/db/schema";
 import { AuthModal } from "@/components/auth/AuthModal";
 import CircularProgress from "@/components/base/CircularProgress";
 import { Container } from "@/components/base/Container";
 import { Navbar } from "@/components/Navbar";
+
+interface AuthSession {
+  data: {
+    user: Pick<User, "name" | "email">;
+    session: Session;
+  } | null;
+}
 
 export default function Home() {
   const [modalState, setModalState] = useState<{
@@ -17,25 +25,24 @@ export default function Home() {
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState<null | any>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const result = await authClient.getSession();
-        setSession(result.data);
+        setSession(result as AuthSession);
         setError(null);
       } catch (error) {
-        console.error("Error checking session:", error);
         setSession(null);
-        setError("Failed to check authentication status");
+        setError(`Failed to check authentication status: ${error}`);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkSession();
+    void checkSession();
   }, []);
 
   const handleSignOut = async () => {
@@ -44,13 +51,12 @@ export default function Home() {
       setSession(null);
       setError(null);
     } catch (error) {
-      console.error("Error signing out:", error);
       setError("Failed to sign out");
     }
   };
 
-  const handleAuthSuccess = (sessionData: any) => {
-    setSession(sessionData);
+  const handleAuthSuccess = (sessionData: AuthSession["data"]) => {
+    setSession({ data: sessionData });
     setError(null);
   };
 
@@ -62,7 +68,7 @@ export default function Home() {
     <Container>
       <Navbar
         isLoading={isLoading}
-        session={session}
+        session={session?.data?.session ?? null}
         onSignOut={handleSignOut}
         onOpenModal={handleOpenModal}
       />
@@ -72,8 +78,8 @@ export default function Home() {
         ) : error ? (
           <p className="text-3xl font-medium text-red-500">{error}</p>
         ) : (
-          <p className="text-3xl font-medium">
-            {`Home | You are${session ? " " : " not "}logged in`}
+          <p className="text-2xl md:text-3xl font-medium">
+            {`Home | You are${session?.data ? " " : " not "}logged in`}
           </p>
         )}
       </main>

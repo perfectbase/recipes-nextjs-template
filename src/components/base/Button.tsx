@@ -7,7 +7,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       className,
@@ -15,47 +15,40 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       size = "default",
       isLoading = false,
       children,
-      disabled,
       ...props
     },
     ref,
   ) => {
     const baseStyles =
-      "rounded-full font-medium transition-colors cursor-pointer inline-flex items-center justify-center";
+      "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer";
 
     const variants = {
-      default:
-        "bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc]",
+      default: "bg-primary text-primary-foreground hover:bg-primary/90",
       outline:
-        "border border-solid border-black/[.08] hover:border-transparent hover:bg-[#f2f2f2] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]",
-      ghost: "hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a]",
+        "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      ghost: "hover:bg-accent hover:text-accent-foreground",
     };
 
     const sizes = {
-      default: "h-10 px-4 text-sm",
-      sm: "h-8 px-3 text-xs",
-      lg: "h-12 px-6 text-base",
+      default: "h-10 px-4 py-2",
+      sm: "h-9 rounded-md px-3",
+      lg: "h-11 rounded-md px-8",
     };
 
     return (
       <button
+        className={cn(baseStyles, variants[variant], sizes[size], className)}
         ref={ref}
-        disabled={disabled || isLoading}
-        className={cn(
-          baseStyles,
-          variants[variant],
-          sizes[size],
-          (disabled || isLoading) && "cursor-not-allowed opacity-50",
-          className,
-        )}
+        disabled={isLoading}
         {...props}
       >
-        {isLoading ? "Please wait..." : children}
+        {isLoading ? (
+          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+        ) : null}
+        {children}
       </button>
     );
   },
 );
 
 Button.displayName = "Button";
-
-export { Button };

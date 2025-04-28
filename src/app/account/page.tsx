@@ -1,37 +1,43 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth/client";
 import CircularProgress from "@/components/base/CircularProgress";
 import { Container } from "@/components/base/Container";
 import { Navbar } from "@/components/Navbar";
+import { authClient } from "@/lib/auth/client";
+import type { Session, User } from "@/server/db/schema";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+interface AuthSession {
+  data: {
+    user: Pick<User, "name" | "email">;
+    session: Session;
+  } | null;
+}
 
 export default function AccountPage() {
   const router = useRouter();
-  const [session, setSession] = useState<null | any>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const session = await authClient.getSession();
-
-        if (session.data) {
-          setSession(session);
+        const result = await authClient.getSession();
+        if (result.data) {
+          setSession(result as AuthSession);
         } else {
           setError("No user found in session");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError(error as string);
+        setError(`Failed to fetch user data: ${error}`);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserData();
+    void fetchUserData();
   }, []);
 
   const handleSignOut = async () => {
@@ -40,7 +46,7 @@ export default function AccountPage() {
       setSession(null);
       router.push("/");
     } catch (error) {
-      console.error("Error signing out:", error);
+      setError("Failed to sign out");
     }
   };
 
@@ -52,7 +58,7 @@ export default function AccountPage() {
     <Container>
       <Navbar
         isLoading={isLoading}
-        session={session}
+        session={session?.data?.session ?? null}
         onSignOut={handleSignOut}
         onOpenModal={handleOpenModal}
       />
@@ -60,11 +66,16 @@ export default function AccountPage() {
         {isLoading ? (
           <CircularProgress />
         ) : error ? (
-          <p className="text-3xl font-medium text-red-500">{error}</p>
+          <p className="text-2xl md:text-3xl font-medium text-red-500">{error}</p>
         ) : session?.data?.user ? (
-          <p className="text-3xl font-medium">
-            {`Account | You are logged in as ${session.data.user.name} (${session.data.user.email})`}
-          </p>
+          <>
+            <p className="text-2xl md:text-3xl font-medium">
+              {"Account | You are logged in"}
+            </p>
+            <p className="text-2xl md:text-3xl font-medium">
+              {`${session.data.user.name} (${session.data.user.email})`}
+            </p>
+          </>
         ) : null}
       </main>
     </Container>

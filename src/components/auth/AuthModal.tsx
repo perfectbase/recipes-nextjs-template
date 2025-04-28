@@ -2,14 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth/client";
+import type { Session, User } from "@/server/db/schema";
 import { Button } from "@/components/base/Button";
 import { Input } from "@/components/base/Input";
+
+interface AuthSession {
+  data: {
+    user: Pick<User, "name" | "email">;
+    session: Session;
+  } | null;
+}
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "login" | "signup";
-  onSuccess?: (session: any) => void;
+  onSuccess?: (session: AuthSession["data"]) => void;
 }
 
 export function AuthModal({
@@ -67,45 +75,35 @@ export function AuthModal({
 
     try {
       if (mode === "signup") {
-        console.log("Signup request data:", {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-        });
         const response = await authClient.signUp.email({
           email: formData.email,
           password: formData.password,
           name: formData.name,
         });
-        console.log("Signup response:", response);
 
         if (response.error) {
-          console.error("Signup error details:", response.error);
-          throw new Error(response.error.message || "Failed to sign up");
+          throw new Error(response.error.message ?? "Failed to sign up");
         }
 
         // Get the session after successful signup
         const session = await authClient.getSession();
-        onSuccess?.(session.data);
+        onSuccess?.(session.data as AuthSession["data"]);
       } else {
         const response = await authClient.signIn.email({
           email: formData.email,
           password: formData.password,
         });
-        console.log("Login response:", response);
 
         if (response.error) {
-          console.error("Login error details:", response.error);
-          throw new Error(response.error.message || "Failed to log in");
+          throw new Error(response.error.message ?? "Failed to log in");
         }
 
         // Get the session after successful login
         const session = await authClient.getSession();
-        onSuccess?.(session.data);
+        onSuccess?.(session.data as AuthSession["data"]);
       }
       onClose();
     } catch (error) {
-      console.error("Authentication error:", error);
       if (error instanceof Error) {
         setError(error.message);
       } else if (

@@ -1,7 +1,9 @@
-import { usePathname } from "next/navigation";
-import type { Session } from "@/server/db/schema";
+"use client";
+
 import { Button } from "@/components/base/Button";
 import { Link } from "@/components/base/Link";
+import type { Session } from "@/server/db/schema";
+import { usePathname } from "next/navigation";
 
 interface NavbarProps {
   isLoading: boolean;
@@ -31,10 +33,17 @@ export function Navbar(props: NavbarProps) {
         </>
       ) : (
         <div className="ml-auto flex gap-4">
-          <Button variant="outline" onClick={() => props.onOpenModal("login")}>
+          <Button
+            variant="outline"
+            onClick={() => props.onOpenModal("login")}
+          >
             Login
           </Button>
-          <Button onClick={() => props.onOpenModal("signup")}>Sign up</Button>
+          <Button
+            onClick={() => props.onOpenModal("signup")}
+          >
+            Sign up
+          </Button>
         </div>
       )}
     </nav>
